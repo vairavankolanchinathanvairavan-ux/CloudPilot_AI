@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CloudPilot AI | Operations Center</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div><div class="eyebrow">MULTI-CLOUD OPERATIONS</div><h1>☁ CloudPilot <span>AI</span></h1>
+  <p>Predictive monitoring · DevOps automation · Safe self-healing</p></div>
+  <div class="status"><i></i> API connected <small>Simulation mode</small></div>
+</header>
+<main>
+  <section class="topline"><div><h2>Infrastructure overview</h2><p>Live simulated telemetry from your demo environment</p></div><button id="refresh">Refresh metrics ↻</button></section>
+  <section class="providers" id="providers"></section>
+  <section class="metrics">
+    <article class="metric"><label>CPU UTILIZATION</label><strong id="cpu">--</strong><div class="track"><i id="cpu-bar"></i></div></article>
+    <article class="metric"><label>MEMORY UTILIZATION</label><strong id="memory">--</strong><div class="track"><i id="memory-bar"></i></div></article>
+    <article class="metric"><label>DISK UTILIZATION</label><strong id="disk">--</strong><div class="track"><i id="disk-bar"></i></div></article>
+    <article class="metric"><label>APP LATENCY</label><strong id="latency">--</strong><small>milliseconds</small></article>
+  </section>
+  <section class="grid">
+    <article class="panel"><div class="panel-head"><div><h2>AI health analysis</h2><p>Rule-based risk score for this starter build</p></div><b id="health" class="pill">Waiting</b></div>
+      <div class="risk"><strong id="risk">--</strong><span>Risk score / 100</span></div>
+      <h3>Detected signals</h3><ul id="signals"><li>Collecting telemetry…</li></ul>
+      <h3>Recommendations</h3><ul id="recommendations"><li>Waiting for analysis…</li></ul>
+    </article>
+    <article class="panel"><div class="panel-head"><div><h2>Self-healing controls</h2><p>Actions are simulated and require approval</p></div></div>
+      <label class="select-label" for="action">Choose an allow-listed action</label>
+      <select id="action"><option value="restart_demo_service">Restart demo service</option><option value="scale_demo_replicas">Scale demo replicas</option></select>
+      <label class="check"><input type="checkbox" id="approval"> I approve this simulated action</label>
+      <button id="heal" class="secondary">Run approved action</button><p id="heal-result" class="result">No action executed.</p>
+      <div class="notice">Safety note: this starter does not connect to AWS, Azure, GCP or Kubernetes. It cannot change real infrastructure.</div>
+    </article>
+  </section>
+  <section class="panel events"><div class="panel-head"><div><h2>Recent activity</h2><p>Latest monitoring and remediation events</p></div></div><div id="events">No events yet.</div></section>
+</main>
+<footer>CloudPilot AI · Final-year project starter MVP · Built for local demonstration</footer>
+<script src="app.js"></script>
+</body></html>

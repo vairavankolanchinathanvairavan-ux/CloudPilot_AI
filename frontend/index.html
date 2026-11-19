@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CloudPilot AI | Operations Center</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div><div class="eyebrow">MULTI-CLOUD OPERATIONS</div><h1>☁ CloudPilot <span>AI</span></h1>
+  <p>Predictive monitoring · DevOps automation · Safe self-healing</p></div>
+  <div class="status"><i></i> API connected <small>Simulation mode</small></div>
+</header>
+<main>
+  <section class="panel" id="notification-center">
+    <div class="panel-head">
+      <div>
+        <h2>Notification Center</h2>
+        <p>Critical, warning and system notifications</p>
+      </div>
+      <strong id="notification-unread-count">0 Unread</strong>
+      <button type="button" id="refresh-notifications" class="secondary">
+        Refresh Notifications ↻
+      </button>
+    </div>
+
+    <div class="history-summary">
+      <article>
+        <span>Total Notifications</span>
+        <strong id="notification-total">--</strong>
+      </article>
+      <article>
+        <span>Unread Notifications</span>
+        <strong id="notification-unread">--</strong>
+      </article>
+    </div>
+
+    <div class="notification-filters">
+      <label for="notification-severity-filter">Filter Severity:</label>
+      <select id="notification-severity-filter">
+        <option value="all">All Notifications</option>
+        <option value="critical">Critical</option>
+        <option value="warning">Warning</option>
+        <option value="info">Info</option>
+      </select>
+    </div>
+
+    <div id="notification-list">
+      <p>Loading notifications...</p>
+    </div>
+    <p id="notification-message">Notification history</p>
+  </section>
+
+  <section class="topline"><div><h2>Infrastructure overview</h2><p>Live simulated telemetry from your demo environment</p></div><button id="refresh">Refresh metrics ↻</button></section>
+  <section class="providers" id="providers"></section>
+  <section class="metrics">
+    <article class="metric"><label>CPU UTILIZATION</label><strong id="cpu">--</strong><div class="track"><i id="cpu-bar"></i></div></article>
+    <article class="metric"><label>MEMORY UTILIZATION</label><strong id="memory">--</strong><div class="track"><i id="memory-bar"></i></div></article>
+    <article class="metric"><label>DISK UTILIZATION</label><strong id="disk">--</strong><div class="track"><i id="disk-bar"></i></div></article>
+    <article class="metric"><label>APP LATENCY</label><strong id="latency">--</strong><small>milliseconds</small></article>
+  </section>
+
+  
+  <section class="panel" id="history-dashboard">
+    <div class="panel-head">
+      <div>
+        <h2>Historical Metrics Analytics</h2>
+        <p>Infrastructure usage trends from recorded metric samples</p>
+      </div>
+      <b class="pill" id="history-count">Loading</b>
+      <button id="export-history" class="secondary">Export CSV ↓</button>
+
+      <select id="history-range" aria-label="Historical sample range">
+        <option value="20">Last 20 Samples</option>
+        <option value="50">Last 50 Samples</option>
+        <option value="100" selected>Last 100 Samples</option>
+      </select>
+
+    </div>
+
+    <div class="history-grid">
+      <article class="history-card">
+        <h3>CPU Usage Trend</h3>
+        <canvas id="cpu-history"></canvas>
+      </article>
+      <article class="history-card">
+        <h3>Memory Usage Trend</h3>
+        <canvas id="memory-history"></canvas>
+      </article>
+      <article class="history-card">
+        <h3>Disk Usage Trend</h3>
+        <canvas id="disk-history"></canvas>
+      </article>
+    </div>
+    <p id="history-message">Loading historical data...</p>
+
+    <div class="history-summary" id="history-summary">
+      <article><span>Average CPU</span><strong id="avg-cpu">--</strong></article>
+      <article><span>Average Memory</span><strong id="avg-memory">--</strong></article>
+      <article><span>Average Disk</span><strong id="avg-disk">--</strong></article>
+      <article><span>Average Latency</span><strong id="avg-latency">--</strong></article>
+    </div>
+
+    <div class="history-anomaly-panel">
+      <h3>Historical Anomaly Events</h3>
+      <p>Recent warning and critical metric samples</p>
+      
+      <div class="anomaly-count-grid">
+        <article><span>Total Anomalies</span><strong id="anomaly-total">--</strong></article>
+        <article><span>Warnings</span><strong id="anomaly-warning">--</strong></article>
+        <article><span>Critical</span><strong id="anomaly-critical">--</strong></article>
+      </div>
+<div id="history-anomalies">Loading anomaly history...</div>
+    </div>
+
+  </section>
+
+
+<section class="panel" id="real-system-history">
+  <div class="panel-head">
+    <div>
+      <h2>Real Mac System Metrics</h2>
+      <p>Actual CPU, memory and disk usage from this machine</p>
+    </div>
+    <button id="refresh-real-history" class="secondary">Refresh Real Metrics ↻</button>
+  </div>
+
+  <div class="history-summary">
+    <article><span>CPU Average</span><strong id="real-avg-cpu">--</strong></article>
+    <article><span>Memory Average</span><strong id="real-avg-memory">--</strong></article>
+    <article><span>Disk Average</span><strong id="real-avg-disk">--</strong></article>
+    <article><span>Total Samples</span><strong id="real-sample-count">--</strong></article>
+  </div>
+
+  <div class="history-grid">
+    <article class="history-card">
+      <h3>Real CPU Usage</h3>
+      <canvas id="real-cpu-history"></canvas>
+    </article>
+    <article class="history-card">
+      <h3>Real Memory Usage</h3>
+      <canvas id="real-memory-history"></canvas>
+    </article>
+    <article class="history-card">
+      <h3>Real Disk Usage</h3>
+      <canvas id="real-disk-history"></canvas>
+    </article>
+  </div>
+  <p id="real-history-message">Loading real system history...</p>
+</section>
+
+<section class="panel" id="real-alerts">
+  <div class="panel-head">
+    <div>
+      <h2>Real System Alerts</h2>
+      <p>Live CPU, memory and disk threshold monitoring</p>
+    </div>
+    <button id="refresh-real-alerts" class="secondary">Refresh Alerts ↻</button>
+  </div>
+  <div class="history-summary">
+    <article><span>Alert Status</span><strong id="real-alert-status">Loading...</strong></article>
+    <article><span>Total Alerts</span><strong id="real-alert-count">--</strong></article>
+  </div>
+  <div id="real-alert-list">
+    <p>Loading system alerts...</p>
+  </div>
+</section>
+
+<section class="panel" id="alert-simulation">
+  <div class="panel-head">
+    <div>
+      <h2>Alert Simulation Lab</h2>
+      <p>Test warning and critical scenarios without changing real system metrics</p>
+    </div>
+  </div>
+
+  <div class="history-grid">
+    <button class="secondary" data-simulation-level="healthy">Healthy Test</button>
+    <button class="secondary" data-simulation-level="warning">Warning Test</button>
+    <button class="secondary" data-simulation-level="critical">Critical Test</button>
+    <button class="secondary" data-simulation-level="multiple">Multiple Alerts Test</button>
+  </div>
+
+  <div class="history-summary">
+    <article><span>Simulation Status</span><strong id="simulation-status">Not started</strong></article>
+    <article><span>Total Alerts</span><strong id="simulation-count">--</strong></article>
+  </div>
+
+  <div id="simulation-metrics" class="history-summary"></div>
+  <div id="simulation-alert-list">
+    <p>Select a scenario to test alert detection.</p>
+  </div>
+  <p id="simulation-message">Simulation data is separate from real Mac metrics.</p>
+</section>
+
+<section class="panel" id="alert-analytics">
+  <div class="panel-head">
+    <div>
+      <h2>Alert Analytics</h2>
+      <p>Severity distribution and metric-wise alert breakdown</p>
+    </div>
+    <button id="refresh-alert-analytics" class="secondary">
+      Refresh Analytics ↻
+    </button>
+  </div>
+
+  <div class="history-grid">
+    <article class="history-card">
+      <h3>Severity Distribution</h3>
+      <canvas id="alert-severity-chart"></canvas>
+    </article>
+    <article class="history-card">
+      <h3>Metric-wise Alert Breakdown</h3>
+      <canvas id="alert-metric-chart"></canvas>
+    </article>
+  </div>
+
+  <p id="alert-analytics-message">Loading alert analytics...</p>
+</section>
+
+<section class="panel" id="alert-history">
+  <div class="panel-head">
+    <div>
+      <h2>Alert History</h2>
+      <p>Recent warning, critical and simulation events</p>
+    </div>
+    <button id="refresh-alert-history" class="secondary">Refresh History ↻</button>
+    <button id="export-alert-history" class="secondary">Export CSV ↓</button>
+  </div>
+
+  <div class="history-summary">
+    <article>
+      <span>Total Recorded Alerts</span>
+      <strong id="history-alert-count">--</strong>
+    </article>
+    <article>
+      <span>Critical Events</span>
+      <strong id="history-critical-count">--</strong>
+    </article>
+    <article>
+      <span>Warning Events</span>
+      <strong id="history-warning-count">--</strong>
+    </article>
+    <article>
+      <span>New Alerts</span>
+      <strong id="history-new-count">--</strong>
+    </article>
+    <article>
+      <span>Acknowledged Alerts</span>
+      <strong id="history-acknowledged-count">--</strong>
+    </article>
+    <article>
+      <span>Resolved Alerts</span>
+      <strong id="history-resolved-count">--</strong>
+    </article>
+  </div>
+
+  <div class="history-grid" style="margin-bottom: 16px;">
+  <input
+    type="text"
+    id="alert-history-search"
+    placeholder="Search alerts or metrics..."
+  >
+  <select id="alert-history-filter">
+    <option value="all">All Events</option>
+    <option value="warning">Warning Only</option>
+    <option value="critical">Critical Only</option>
+    <option value="healthy">Healthy Only</option>
+  </select>
+</div>
+
+<div id="alert-history-list">
+    <p>Loading alert history...</p>
+  </div>
+  <p id="alert-history-message">Showing recent recorded simulation events.</p>
+</section>
+
+<section class="panel" id="agents">
+    <div class="panel-head">
+      <div>
+        <h2>AI Agents Operations</h2>
+        <p>Live status from four specialized agents</p>
+      </div>
+      <b class="pill">4 Agents</b>
+      <button id="refresh-agents" class="secondary">Refresh Agents ↻</button>
+    </div>
+
+    <div class="agent-grid">
+      <article class="agent-card">
+        <h3>Monitor Agent</h3>
+        <b id="monitor-status" class="pill">Loading</b>
+        <p id="monitor-details">Waiting for telemetry...</p>
+      </article>
+
+      <article class="agent-card">
+        <h3>AI Prediction Agent</h3>
+        <b id="prediction-status" class="pill">Loading</b>
+        <p id="prediction-details">Waiting for prediction...</p>
+        <p id="prediction-note">Model information loading...</p>
+      </article>
+
+      <article class="agent-card">
+        <h3>Security Agent</h3>
+        <b id="security-status" class="pill">Loading</b>
+        <p id="security-details">Waiting for security scan...</p>
+        <ul id="security-findings"></ul>
+      </article>
+
+      <article class="agent-card">
+        <h3>Self-Healing Agent</h3>
+        <b id="healing-status" class="pill">Loading</b>
+        <p id="healing-details">Waiting for remediation...</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="grid">
+    <article class="panel"><div class="panel-head"><div><h2>AI health analysis</h2><p>Rule-based risk score for this starter build</p></div><b id="health" class="pill">Waiting</b></div>
+      <div class="risk"><strong id="risk">--</strong><span>Risk score / 100</span></div>
+      <h3>Detected signals</h3><ul id="signals"><li>Collecting telemetry…</li></ul>
+      <h3>Recommendations</h3><ul id="recommendations"><li>Waiting for analysis…</li></ul>
+    </article>
+    <article class="panel"><div class="panel-head"><div><h2>Self-healing controls</h2><p>Actions are simulated and require approval</p></div></div>
+      <label class="select-label" for="action">Choose an allow-listed action</label>
+      <select id="action"><option value="restart_demo_service">Restart demo service</option><option value="scale_demo_replicas">Scale demo replicas</option></select>
+      <label class="check"><input type="checkbox" id="approval"> I approve this simulated action</label>
+      <button id="heal" class="secondary">Run approved action</button><p id="heal-result" class="result">No action executed.</p>
+      <div class="notice">Safety note: this starter does not connect to AWS, Azure, GCP or Kubernetes. It cannot change real infrastructure.</div>
+    </article>
+  </section>
+  <section class="panel events"><div class="panel-head"><div><h2>Recent activity</h2><p>Latest monitoring and remediation events</p></div></div><div id="events">No events yet.</div></section>
+</main>
+<footer>CloudPilot AI · Final-year project starter MVP · Built for local demonstration</footer>
+<script src="app.js"></script>
+</body></html>
