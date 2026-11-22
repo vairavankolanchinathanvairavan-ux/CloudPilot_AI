@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 import asyncio
@@ -223,3 +226,7 @@ app.include_router(prediction_router)
 from app.api.notifications import router as notifications_router
 app.include_router(notifications_router)
 
+
+# Remote Device Monitoring API
+from app.api.devices import router as devices_router
+app.include_router(devices_router)

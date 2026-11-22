@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudPilot AI | Device Registration</title>
+    <link rel="stylesheet" href="register.css">
+</head>
+<body>
+    <main class="container">
+        <div class="logo">☁ CloudPilot AI</div>
+
+        <section class="card">
+            <div class="icon">💻</div>
+            <h1>Register Your Device</h1>
+            <p class="subtitle">
+                Connect your computer to CloudPilot AI monitoring.
+            </p>
+
+            <form id="enrollment-form">
+                <label for="device-name">Device Name</label>
+                <input
+                    id="device-name"
+                    name="device_name"
+                    type="text"
+                    maxlength="120"
+                    placeholder="e.g. My MacBook"
+                    required
+                >
+                <button id="submit-button" type="submit">
+                    Submit Registration
+                </button>
+            </form>
+
+            <div id="message" role="status" aria-live="polite"></div>
+            <p class="notice">
+                Your device will remain disconnected until the project owner
+                approves your registration. Metrics are not collected by
+                submitting this form alone.
+            </p>
+        </section>
+
+        <footer>© CloudPilot AI · Multi-Cloud DevOps Monitoring</footer>
+    </main>
+
+    <script src="register.js"></script>
+</body>
+</html>

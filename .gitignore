@@ -4,3 +4,35 @@ venv/
 *.pyc
 .DS_Store
 .env
+
+# Electron generated files
+desktop/node_modules/
+desktop/dist/
+
+# Local backups
+*.backup
+*.bak
+
+# Runtime monitoring data
+data/remote_devices.jsonl
+data/approved_device_credentials.json
+
+# CloudPilot runtime data and credentials
+data/device_tokens.json
+data/device_enrollments.json
+data/approved_device_credentials.json
+data/remote_devices.jsonl
+data/real_system_metrics.jsonl
+data/events.jsonl
+data/notifications.json
+
+# Backup files
+*.backup
+*.enrollment-backup
+*.approval-backup
+*.auth-backup
+*.token-display-backup
+*.token-fix-backup
+
+# Desktop dependencies
+desktop/node_modules/

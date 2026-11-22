@@ -61,6 +61,39 @@
   </section>
 
   
+  <section class="panel" id="connected-devices">
+    <div class="panel-head">
+      <div>
+        <h2>Connected Devices</h2>
+        <p>Real-time metrics received from remote computers</p>
+      </div>
+      <button id="refresh-devices" class="secondary">Refresh Devices</button>
+    </div>
+    <div style="display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;">
+      <input id="dashboard-token" type="password"
+             placeholder="Enter dashboard token"
+             autocomplete="off">
+      <button id="connect-dashboard" class="secondary">Connect Dashboard</button>
+    </div>
+    <div id="remote-devices-list">
+      <p>Loading connected devices...</p>
+    </div>
+  </section>
+
+  <section class="panel" id="device-approvals">
+    <div class="panel-head">
+      <div>
+        <h2>Device Registration Requests</h2>
+        <p>Review and approve computers requesting access</p>
+      </div>
+      <button id="refresh-enrollments" class="secondary">Refresh Requests</button>
+    </div>
+    <div id="enrollment-requests-list">
+      <p>Connect your dashboard token to view pending requests.</p>
+    </div>
+    <div id="enrollment-token-result" aria-live="polite"></div>
+  </section>
+
   <section class="panel" id="history-dashboard">
     <div class="panel-head">
       <div>

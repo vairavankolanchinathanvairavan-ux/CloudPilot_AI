@@ -1115,3 +1115,282 @@ if (notificationRefreshButton) {
 
 loadNotifications();
 
+
+// CLOUDPILOT_REMOTE_DEVICES
+
+let cloudPilotDashboardToken = "";
+async function loadRemoteDevices() {
+  const list = document.getElementById("remote-devices-list");
+  if (!list) return;
+
+  try {
+    if (!cloudPilotDashboardToken) {
+      list.textContent = "Enter your dashboard token to connect.";
+      return;
+    }
+
+    const apiResponse = await fetch(`${API}/api/devices`, {
+      headers: {
+        "Authorization": `Bearer ${cloudPilotDashboardToken}`
+      }
+    });
+
+    if (!apiResponse.ok) {
+      throw new Error(`API error ${apiResponse.status}`);
+    }
+
+    const response = await apiResponse.json();
+    list.replaceChildren();
+
+    if (!response.length) {
+      list.textContent = "No connected devices yet.";
+      return;
+    }
+
+    response.forEach(device => {
+      const card = document.createElement("div");
+      card.className = "provider";
+
+      const title = document.createElement("b");
+      title.textContent = device.device_name;
+
+      const details = document.createElement("p");
+      details.textContent =
+        `CPU: ${device.cpu_usage}% | RAM: ${device.memory_usage}% | Disk: ${device.disk_usage}%`;
+
+      const time = document.createElement("small");
+      time.textContent = "Last update: " +
+        new Date(device.timestamp).toLocaleString();
+
+      card.append(title, details, time);
+      list.appendChild(card);
+    });
+  } catch (error) {
+    list.textContent = "Unable to load devices: " + error.message;
+  }
+}
+
+const dashboardConnectButton =
+  document.getElementById("connect-dashboard");
+
+if (dashboardConnectButton) {
+  dashboardConnectButton.onclick = () => {
+    cloudPilotDashboardToken =
+      document.getElementById("dashboard-token").value.trim();
+
+    loadRemoteDevices();
+    loadPendingEnrollments();
+  };
+}
+
+const remoteDeviceRefreshButton =
+  document.getElementById("refresh-devices");
+
+if (remoteDeviceRefreshButton) {
+  remoteDeviceRefreshButton.onclick = loadRemoteDevices;
+}
+
+loadRemoteDevices();
+setInterval(loadRemoteDevices, 10000);
+setInterval(loadPendingEnrollments, 10000);
+
+// CLOUDPILOT_DEVICE_APPROVALS
+
+async function loadPendingEnrollments() {
+  const list = document.getElementById("enrollment-requests-list");
+  if (!list) return;
+
+  if (!cloudPilotDashboardToken) {
+    list.textContent = "Connect your dashboard token to view pending requests.";
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API}/api/devices/enrollment/requests`, {
+      headers: {
+        "Authorization": `Bearer ${cloudPilotDashboardToken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error ${response.status}`);
+    }
+
+    const requests = await response.json();
+    list.replaceChildren();
+
+    if (!requests.length) {
+      list.textContent = "No pending registration requests.";
+      return;
+    }
+
+    requests.forEach(request => {
+      const card = document.createElement("div");
+      card.className = "provider";
+
+      const title = document.createElement("b");
+      title.textContent = request.device_name;
+
+      const details = document.createElement("p");
+      details.textContent =
+        `Request ID: ${request.request_id} | Requested: ${new Date(request.requested_at).toLocaleString()}`;
+
+      const actions = document.createElement("div");
+      actions.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;";
+
+      const approve = document.createElement("button");
+      approve.className = "secondary";
+      approve.textContent = "Approve";
+
+      const reject = document.createElement("button");
+      reject.className = "secondary";
+      reject.textContent = "Reject";
+
+      approve.onclick = async () => {
+        approve.disabled = true;
+        reject.disabled = true;
+        approve.textContent = "Approving...";
+
+        try {
+          const result = await fetch(
+            `${API}/api/devices/enrollment/${encodeURIComponent(request.request_id)}/approve`,
+            {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${cloudPilotDashboardToken}`
+              }
+            }
+          );
+
+          const data = await result.json();
+          if (!result.ok) {
+            throw new Error(data.detail || `API error ${result.status}`);
+          }
+
+          card.replaceChildren();
+
+          const approvedTitle = document.createElement("b");
+          approvedTitle.textContent = `${data.device_name} — Approved`;
+
+          const approvedDeviceId = document.createElement("p");
+          approvedDeviceId.textContent = `Device ID: ${data.device_id}`;
+
+          const tokenLabel = document.createElement("p");
+          tokenLabel.textContent =
+            "One-time device token (copy and provide securely to the device owner):";
+
+          const tokenValue = document.createElement("textarea");
+          tokenValue.readOnly = true;
+          tokenValue.value = data.device_token || "";
+          tokenValue.rows = 3;
+          tokenValue.style.cssText =
+            "width:100%;margin-top:8px;overflow-wrap:anywhere;";
+
+          const warning = document.createElement("small");
+          warning.textContent =
+            "This token is shown only in this approval response. Store it securely; do not share it publicly.";
+
+          card.append(approvedTitle);
+
+          const tokenResult = document.getElementById("enrollment-token-result");
+          if (!tokenResult) {
+            throw new Error("Persistent token display area not found.");
+          }
+
+          tokenResult.replaceChildren();
+
+          const resultTitle = document.createElement("h3");
+          resultTitle.textContent = "Approved Device — Save This Token";
+
+          const deviceId = document.createElement("p");
+          deviceId.textContent = `Device ID: ${data.device_id}`;
+
+          const persistentTokenLabel = document.createElement("p");
+          persistentTokenLabel.textContent = "One-time device token — save securely:";
+
+          const persistentTokenValue = document.createElement("textarea");
+          persistentTokenValue.readOnly = true;
+          persistentTokenValue.value = data.device_token || "";
+          persistentTokenValue.rows = 3;
+          persistentTokenValue.style.cssText = "width:100%;margin-top:8px;overflow-wrap:anywhere;";
+
+          const copyButton = document.createElement("button");
+          copyButton.type = "button";
+          copyButton.className = "secondary";
+          copyButton.textContent = "Copy Device Token";
+          copyButton.onclick = async () => {
+            try {
+              await navigator.clipboard.writeText(persistentTokenValue.value);
+              copyButton.textContent = "Copied";
+            } catch (error) {
+              persistentTokenValue.focus();
+              persistentTokenValue.select();
+              copyButton.textContent = "Press Cmd+C to copy";
+            }
+          };
+
+          const persistentWarning = document.createElement("small");
+          persistentWarning.textContent = "Save this token securely. It is shown only once by the approval response. Do not share it publicly.";
+
+          tokenResult.append(resultTitle, approvedDeviceId, persistentTokenLabel, persistentTokenValue, copyButton, persistentWarning);
+          loadRemoteDevices();
+        } catch (error) {
+          approve.disabled = false;
+          reject.disabled = false;
+          approve.textContent = "Approve";
+          alert("Approval failed: " + error.message);
+        }
+      };
+
+      reject.onclick = async () => {
+        if (!confirm(`Reject registration from ${request.device_name}?`)) return;
+
+        approve.disabled = true;
+        reject.disabled = true;
+        reject.textContent = "Rejecting...";
+
+        try {
+          const result = await fetch(
+            `${API}/api/devices/enrollment/${encodeURIComponent(request.request_id)}/reject`,
+            {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${cloudPilotDashboardToken}`
+              }
+            }
+          );
+
+          const data = await result.json();
+          if (!result.ok) {
+            throw new Error(data.detail || `API error ${result.status}`);
+          }
+
+          card.textContent = `${request.device_name} — Rejected`;
+        } catch (error) {
+          approve.disabled = false;
+          reject.disabled = false;
+          reject.textContent = "Reject";
+          alert("Rejection failed: " + error.message);
+        }
+      };
+
+      actions.append(approve, reject);
+      card.append(title, details, actions);
+      list.appendChild(card);
+    });
+  } catch (error) {
+    list.textContent = "Unable to load requests: " + error.message;
+  }
+}
+
+const enrollmentRefreshButton =
+  document.getElementById("refresh-enrollments");
+
+if (enrollmentRefreshButton) {
+  enrollmentRefreshButton.onclick = loadPendingEnrollments;
+}
+
+// CLOUDPILOT_DEVICE_APPROVALS_END
+
+// CLOUDPILOT_REMOTE_DEVICES_END
+
