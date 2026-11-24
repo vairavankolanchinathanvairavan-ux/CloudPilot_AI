@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from datetime import datetime, timezone
 from pathlib import Path
-import json, random, statistics
+import json, random, statistics, os
 
 async def automatic_system_monitor():
     from app.services.monitoring import get_system_metrics
@@ -40,13 +40,13 @@ app = FastAPI(title="CloudPilot AI", version="1.0.0",
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Restrict this to your dashboard origin before production.
+    allow_origins=[origin.strip() for origin in os.getenv("CORS_ORIGINS", "http://127.0.0.1:5500,http://localhost:5500").split(",") if origin.strip()],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+DATA_DIR = Path(os.getenv("CLOUDPILOT_DATA_DIR", str(Path(__file__).resolve().parent.parent / "data"))).resolve()
 DATA_DIR.mkdir(exist_ok=True)
 EVENTS_FILE = DATA_DIR / "events.jsonl"
 

@@ -1073,14 +1073,7 @@ async function loadNotifications() {
             );
             await loadNotifications();
 
-const notificationSeverityFilter =
-  document.getElementById("notification-severity-filter");
-
-if (notificationSeverityFilter) {
-  notificationSeverityFilter.addEventListener("change", loadNotifications);
-  console.log("Notification severity filter connected.");
-}
-          } catch (error) {
+} catch (error) {
             alert("Unable to update notification: " + error.message);
             button.disabled = false;
           }
@@ -1098,6 +1091,14 @@ if (notificationSeverityFilter) {
     message.textContent =
       "Unable to load notifications: " + error.message;
   }
+}
+
+const notificationSeverityFilter =
+  document.getElementById("notification-severity-filter");
+
+if (notificationSeverityFilter) {
+  notificationSeverityFilter.addEventListener("change", loadNotifications);
+  console.log("Notification severity filter connected.");
 }
 
 const notificationRefreshButton =

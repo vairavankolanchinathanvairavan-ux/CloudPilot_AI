@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/api/devices", tags=["Remote Devices"])
 
-DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+DATA_DIR = Path(os.getenv("CLOUDPILOT_DATA_DIR", str(Path(__file__).resolve().parents[2] / "data"))).resolve()
 DEVICES_FILE = DATA_DIR / "remote_devices.jsonl"
 ENROLLMENTS_FILE = DATA_DIR / "device_enrollments.json"
 TOKENS_FILE = DATA_DIR / "device_tokens.json"
